@@ -1,9 +1,5 @@
 package mudclient;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 public class GameModel {
    public int jg;
    public int[] kg;
@@ -244,88 +240,6 @@ public class GameModel {
             this.yg[var19] = 0;
          } else {
             this.yg[var19] = this.ci;
-         }
-      }
-
-      this.eh = 1;
-   }
-
-   public GameModel(String var1) {
-      boolean var2 = false;
-      boolean var3 = false;
-      Object var4 = null;
-
-      byte[] var25;
-      try {
-         InputStream var5 = Utility.openStream(var1);
-         DataInputStream var6 = new DataInputStream(var5);
-         var25 = new byte[3];
-         this.qj = 0;
-         this.rj = 0;
-         int var23 = 0;
-
-         while(true) {
-            if(var23 >= 3) {
-               int var24 = this.me(var25);
-               var25 = new byte[var24];
-               this.qj = 0;
-               this.rj = 0;
-
-               for(var23 = 0; var23 < var24; var23 += var6.read(var25, var23, var24 - var23)) {
-                  ;
-               }
-
-               var6.close();
-               break;
-            }
-
-            var23 += var6.read(var25, var23, 3 - var23);
-         }
-      } catch (IOException var22) {
-         this.jg = 0;
-         this.rg = 0;
-         return;
-      }
-
-      int var26 = this.me(var25);
-      int var27 = this.me(var25);
-      boolean var14 = false;
-      this.td(var26, var27);
-      this.li = new int[var27][];
-
-      for(int var15 = 0; var15 < var26; ++var15) {
-         int var7 = this.me(var25);
-         int var8 = this.me(var25);
-         int var9 = this.me(var25);
-         this.je(var7, var8, var9);
-      }
-
-      for(int var16 = 0; var16 < var27; ++var16) {
-         int var10 = this.me(var25);
-         int var11 = this.me(var25);
-         int var12 = this.me(var25);
-         int var13 = this.me(var25);
-         this.nj = this.me(var25);
-         this.oj = this.me(var25);
-         int var28 = this.me(var25);
-         int[] var17 = new int[var10];
-
-         for(int var18 = 0; var18 < var10; ++var18) {
-            var17[var18] = this.me(var25);
-         }
-
-         int[] var19 = new int[var13];
-
-         for(int var20 = 0; var20 < var13; ++var20) {
-            var19[var20] = this.me(var25);
-         }
-
-         int var21 = this.createFace(var10, var17, var11, var12);
-         this.li[var16] = var19;
-         if(var28 == 0) {
-            this.yg[var21] = 0;
-         } else {
-            this.yg[var21] = this.ci;
          }
       }
 

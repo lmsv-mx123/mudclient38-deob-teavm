@@ -1,11 +1,7 @@
 package mudclient;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 public class Utility {
@@ -20,28 +16,12 @@ public class Utility {
    static int[] sdb = new int[1000];
    static int[] tdb = new int[1000];
 
-   public static InputStream openStream(String var0) throws IOException {
-      Object var1;
-      try {
-    	  var1 = new BufferedInputStream(new FileInputStream(var0));
-    	  return (InputStream)var1;
-      } catch (IOException ioe) {
-    	  ioe.printStackTrace();
-    	  throw ioe;
-      }
-      /*if(kdb == null) {
-         var1 = new FileInputStream(var0);
-      } else {
-         URL var2 = new URL(kdb, var0);
-         var1 = var2.openStream();
-      }
-
-      return (InputStream)var1;*/
-   }
+   public static FileDownloadStream getDownloadStream(String fileName) throws IOException {
+	  return new FileDownloadStream(fileName);
+	}
 
    public static void loadData(String var0, byte[] var1, int var2) throws IOException {
-      InputStream var3 = openStream(var0);
-      DataInputStream var4 = new DataInputStream(var3);
+	  FileDownloadStream var4 = getDownloadStream(var0);
 
       try {
          var4.readFully(var1, 0, var2);
@@ -174,10 +154,9 @@ public class Utility {
                var0 = var0.toUpperCase();
             }
 
-            InputStream var5 = openStream(var0);
-            DataInputStream var6 = new DataInputStream(var5);
+            FileDownloadStream var5 = getDownloadStream(var0);
             byte[] var7 = new byte[6];
-            var6.readFully(var7, 0, 6);
+            var5.readFully(var7, 0, 6);
             var2 = ((var7[0] & 255) << 16) + ((var7[1] & 255) << 8) + (var7[2] & 255);
             var3 = ((var7[3] & 255) << 16) + ((var7[4] & 255) << 8) + (var7[5] & 255);
             int var8 = 0;
@@ -189,11 +168,11 @@ public class Utility {
                   var9 = 1000;
                }
 
-               var6.readFully(var4, var8, var9);
+               var5.readFully(var4, var8, var9);
             }
 
             var1 = 2;
-            var6.close();
+            var5.close();
          } catch (IOException var10) {
             ++var1;
          }

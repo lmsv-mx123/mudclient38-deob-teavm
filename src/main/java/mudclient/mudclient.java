@@ -1,10 +1,8 @@
 package mudclient;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.io.IOException;
+
+import org.teavm.jso.canvas.ImageData;
 
 public class mudclient extends GameConnection {
   boolean zs = false;
@@ -25,7 +23,7 @@ public class mudclient extends GameConnection {
   Graphics graphics;
   Scene scene;
   SurfaceSprite surface;
-  Image imageHbar;
+  ImageData imageHbar;
   int st;
   int magicLoc = 128;
   int loggedIn;
@@ -286,13 +284,6 @@ public class mudclient extends GameConnection {
   }
 
   public void startGame() {
-    if (this.yt) {
-      String var1 = this.getDocumentBase().getHost().toLowerCase();
-      if (!var1.endsWith("jagex.com") && !var1.endsWith("jagex.co.uk") && !var1.endsWith("jagex.superb.net") && !var1.endsWith("207.228.231.226") && !var1.endsWith("runescape.com") && !var1.endsWith("runescape.co.uk") && !var1.endsWith("64.23.60.47") && !var1.endsWith("penguin.local") && !var1.endsWith("jagex.dnsalias.com")) {
-        this.errorLoadingCodebase = true;
-        return;
-      }
-    }
 
     //super.ad = 43594;
     super.rp = -11;
@@ -340,7 +331,7 @@ public class mudclient extends GameConnection {
   }
 
   public void loadGameConfig() {
-    if (this.inAppletMode()) {
+    if (this.isApplication()) {
       byte[] var1 = null;
 
       try {
@@ -352,7 +343,7 @@ public class mudclient extends GameConnection {
       GameData.loadData(var1);
     } else {
       this.drawLoadingScreen(10, "Loading configuration");
-      GameData.loadData();
+      //GameData.loadData();
     }
   }
 
@@ -361,7 +352,7 @@ public class mudclient extends GameConnection {
     int var2;
     int var3;
     int var4;
-    if (this.inAppletMode()) {
+    if (this.isApplication()) {
       var1 = null;
 
       try {
@@ -451,7 +442,7 @@ public class mudclient extends GameConnection {
     this.iw = 0;
     this.jw = this.iw;
     byte[] var2 = null;
-    if (this.inAppletMode() && var1) {
+    if (this.isApplication() && var1) {
       String var3 = "entity" + Version.ENTITY + ".jag";
 
       try {
@@ -477,7 +468,7 @@ public class mudclient extends GameConnection {
       }
 
       if (var1) {
-        if (this.inAppletMode()) {
+        if (this.isApplication()) {
           boolean var7 = true;
           if (GameData.whb[var4] != 0) {
             var7 = false;
@@ -530,7 +521,7 @@ public class mudclient extends GameConnection {
   }
 
   public void loadTextures() {
-    if (this.inAppletMode()) {
+    if (this.isApplication()) {
       this.scene.loadTextures("textures" + Version.TEXTURES + ".jag", 7, 11, 50, this);
     } else {
       this.showLoadingProgress(50, "Loading textures");
@@ -547,7 +538,7 @@ public class mudclient extends GameConnection {
     GameData.getModelID("skulltorcha4");
     GameData.getModelID("firea2");
     GameData.getModelID("firea3");
-    if (this.inAppletMode()) {
+    if (this.isApplication()) {
       byte[] var5 = null;
 
       try {
@@ -565,18 +556,11 @@ public class mudclient extends GameConnection {
         }
       }
 
-    } else {
-      this.showLoadingProgress(70, "Loading 3d models");
-
-      for (int var1 = 0; var1 < GameData.lkb; ++var1) {
-        this.gameModels[var1] = new GameModel("../gamedata/models/" + GameData.mkb[var1] + ".ob2");
-      }
-
     }
   }
 
   public void loadMaps() {
-    if (this.inAppletMode()) {
+    if (this.isApplication()) {
       this.world.geb = null;
 
       try {
@@ -701,7 +685,7 @@ public class mudclient extends GameConnection {
   }
 
   public void drawHbar() {
-    this.graphics.drawImage(this.imageHbar, 0, 0, this);
+    this.graphics.drawImage(this.imageHbar, 0, 0);
   }
 
   public void handleKeyPress(int var1) {

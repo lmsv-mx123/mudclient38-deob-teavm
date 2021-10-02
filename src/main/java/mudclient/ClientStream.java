@@ -1,6 +1,5 @@
 package mudclient;
 
-import java.applet.Applet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -33,7 +32,7 @@ public class ClientStream extends Buffer implements Runnable {
       super(var1);
    }
 
-   public static ClientStream create(String var0, Applet var1, int var2) throws IOException {
+   public static ClientStream create(String var0, int var2) throws IOException {
       Socket var3;
       /*if(var1 != null) {
          var3 = new Socket(InetAddress.getByName(var1.getCodeBase().getHost()), var2);

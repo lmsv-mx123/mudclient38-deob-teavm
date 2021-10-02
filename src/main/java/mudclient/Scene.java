@@ -3132,7 +3132,7 @@ public class Scene {
       }
    }
 
-   public void loadTextures(String var1, int var2, int var3, int var4, GameApplet var5) {
+   public void loadTextures(String var1, int var2, int var3, int var4, GameShell var5) {
       try {
          this.io = var5.readDataFile(var1, "textures", var4);
          byte[] var6 = Utility.unpackData("textures.txt", 0, this.io);

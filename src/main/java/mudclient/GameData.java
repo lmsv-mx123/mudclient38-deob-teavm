@@ -1,5 +1,5 @@
-import jagex.Buffer;
-import jagex.Utility;
+package mudclient;
+
 import java.io.IOException;
 
 public class GameData {

@@ -1,29 +1,17 @@
 package mudclient;
 
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Event;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.IndexColorModel;
-import java.awt.image.MemoryImageSource;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-public class GameApplet extends Applet implements Runnable {
-   private int appletWidth = 512;
-   private int appletHeight = 384;
-   private Thread appletThread;
+import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.typedarrays.Uint8ClampedArray;
+
+public class GameShell {
+   private int width = 512;
+   private int height = 384;
    private int targetFPS = 20;
    private int maxDrawTime = 1000;
    private long[] timings = new long[10];
-   static GameFrame gameFrame = null;
-   private boolean appletMode;
+   private boolean applicationMode;
    private int stopTimeout;
    private int interlaceTimer;
    public int rp;
@@ -36,7 +24,7 @@ public class GameApplet extends Applet implements Runnable {
    private Font yp = new Font("TimesRoman", 0, 15);
    private Font zp = new Font("Helvetica", 1, 13);
    private Font aq = new Font("Helvetica", 0, 12);
-   private Image bq;
+   private ImageData bq;
    private Graphics graphics;
    public boolean keyLcb = false;
    public boolean keyRcb = false;
@@ -63,54 +51,39 @@ public class GameApplet extends Applet implements Runnable {
    public void startGame() {
    }
 
-   public synchronized void handleInputs() {
+   public void handleInputs() {
    }
 
    public void onClosing() {
    }
 
-   public synchronized void draw() {
+   public void draw() {
    }
 
    public void drawHbar() {
    }
 
-   public final void startApplication(int var1, int var2, String var3, boolean var4) {
-      this.appletMode = false;
+   public final void startApplication(int width, int height, String var3, boolean var4) {
+      this.applicationMode = true;
       System.out.println("Started application");
-      this.appletWidth = var1;
-      this.appletHeight = var2;
-      gameFrame = new GameFrame(this, var1, var2, var3, var4, false);
+      this.width = width;
+      this.height = height;
       this.loadingStep = 1;
-      this.appletThread = new Thread(this);
-      this.appletThread.start();
-      this.appletThread.setPriority(1);
+      this.start();
    }
 
-   public final boolean inAppletMode() {
-      return this.appletMode || true;
+   public final boolean isApplication() {
+      return this.applicationMode;
    }
 
    public final void createFrame(int var1, int var2, String var3, boolean var4) {
-      if(gameFrame == null) {
-         this.appletWidth = var1;
-         this.appletHeight = var2;
-         gameFrame = new GameFrame(this, var1, var2, var3, var4, this.appletMode);
-      }
+	   this.width = var1;
+       this.height = var2;
    }
 
    public final void resizeFrame(int var1, int var2) {
-      if(gameFrame != null) {
-         gameFrame.resize(var1, var2);
-         this.appletWidth = var1;
-         this.appletHeight = var2;
-      }
-   }
-
-   public final void setFrameIcon(Image var1) {
-      if(gameFrame != null) {
-         gameFrame.setIconImage(var1);
-      }
+	   this.width = var1;
+       this.height = var2;
    }
 
    public void resize(int var1, int var2) {
@@ -118,23 +91,15 @@ public class GameApplet extends Applet implements Runnable {
    }
 
    public final Graphics getGraphics() {
-      return gameFrame == null?super.getGraphics(): gameFrame.getGraphics();
+      return this.graphics;
    }
 
    public final int getAppletWidth() {
-      return this.appletWidth;
+      return this.width;
    }
 
    public final int getAppletHeight() {
-      return this.appletHeight;
-   }
-
-   public final Image createImage(int var1, int var2) {
-      return gameFrame == null?super.createImage(var1, var2): gameFrame.createImage(var1, var2);
-   }
-
-   public Frame getGameFrame() {
-      return gameFrame;
+      return this.height;
    }
 
    public final void setTargetFPS(int var1) {
@@ -152,7 +117,7 @@ public class GameApplet extends Applet implements Runnable {
 
    }
 
-   public synchronized boolean keyDown(Event var1, int key) {
+   public boolean keyDown(int key) {
 	  this.handleKeyPress(key);
       this.lastKeyCode1 = key;
       this.lastKeyCode2 = key;
@@ -224,7 +189,7 @@ public class GameApplet extends Applet implements Runnable {
    public void handleKeyPress(int var1) {
    }
 
-   public synchronized boolean keyUp(Event var1, int var2) {
+   public boolean keyUp(int var2) {
 	  this.lastKeyCode1 = 0;
       if(var2 == 1006) {
          this.keyLeft = false;
@@ -265,7 +230,7 @@ public class GameApplet extends Applet implements Runnable {
       return true;
    }
 
-   public synchronized boolean mouseMove(Event var1, int var2, int var3) {
+   public boolean mouseMove(int var2, int var3) {
       this.mouseX = var2;
       this.mouseY = var3 + this.rp;
       this.mouseButtonDown = 0;
@@ -273,48 +238,37 @@ public class GameApplet extends Applet implements Runnable {
       return true;
    }
 
-   public synchronized boolean mouseUp(Event var1, int var2, int var3) {
+   public boolean mouseUp(int var2, int var3) {
       this.mouseX = var2;
       this.mouseY = var3 + this.rp;
       this.mouseButtonDown = 0;
       return true;
    }
 
-   public synchronized boolean mouseDown(Event var1, int var2, int var3) {
+   public boolean mouseDown(int var2, int var3) {
       this.mouseX = var2;
       this.mouseY = var3 + this.rp;
-      if(var1.metaDown()) {
+      /*if(var1.metaDown()) {
          this.mouseButtonDown = 2;
       } else {
          this.mouseButtonDown = 1;
-      }
+      }*/
 
       this.lastMouseButtonDown = this.mouseButtonDown;
       this.lastMouseAction = 0;
       return true;
    }
 
-   public synchronized boolean mouseDrag(Event var1, int var2, int var3) {
+   public boolean mouseDrag(int var2, int var3) {
       this.mouseX = var2;
       this.mouseY = var3 + this.rp;
-      if(var1.metaDown()) {
+      /*if(var1.metaDown()) {
          this.mouseButtonDown = 2;
       } else {
          this.mouseButtonDown = 1;
-      }
+      }*/
 
       return true;
-   }
-
-   public final void init() {
-      this.appletMode = true;
-      System.out.println("Started applet");
-      this.appletWidth = this.size().width;
-      this.appletHeight = this.size().height;
-      this.loadingStep = 1;
-      Utility.appletCodeBase = this.getCodeBase();
-      this.appletThread = new Thread(this);
-      this.appletThread.start();
    }
 
    public final void start() {
@@ -343,10 +297,6 @@ public class GameApplet extends Applet implements Runnable {
       if(this.stopTimeout == -1) {
          System.out.println("5 seconds expired, forcing kill");
          this.closeProgram();
-         if(this.appletThread != null) {
-            this.appletThread.stop();
-            this.appletThread = null;
-         }
       }
 
    }
@@ -362,11 +312,7 @@ public class GameApplet extends Applet implements Runnable {
          ;
       }
 
-      if(gameFrame != null) {
-         gameFrame.dispose();
-      }
-
-      if(!this.appletMode) {
+      if(!this.applicationMode) {
          System.exit(0);
       }
 
@@ -394,14 +340,12 @@ public class GameApplet extends Applet implements Runnable {
       long var1 = System.currentTimeMillis();
 
       while(true) {
-         do {
             do {
                if(this.stopTimeout < 0) {
                   if(this.stopTimeout == -1) {
                      this.closeProgram();
                   }
 
-                  this.appletThread = null;
                   return;
                }
 
@@ -409,7 +353,6 @@ public class GameApplet extends Applet implements Runnable {
                   --this.stopTimeout;
                   if(this.stopTimeout == 0) {
                      this.closeProgram();
-                     this.appletThread = null;
                      return;
                   }
                }
@@ -479,10 +422,13 @@ public class GameApplet extends Applet implements Runnable {
                /*if(this.op && var3 == 0) {
                   this.showStatus("Fps:" + this.xq + "Del:" + var5);
                }*/
-            } while(gameFrame == null);
-         } while(gameFrame.getFrameWidth() == this.appletWidth && gameFrame.getFrameHeight() == this.appletHeight);
+            } while(this.stopTimeout >= 0);
+            
+            if(this.stopTimeout == -1) {
+                this.closeProgram();
+             }
 
-         this.resize(gameFrame.getFrameWidth(), gameFrame.getFrameHeight());
+         //this.resize(gameFrame.getFrameWidth(), gameFrame.getFrameHeight());
       }
    }
 
@@ -520,12 +466,12 @@ public class GameApplet extends Applet implements Runnable {
    }
 
    public void drawLoadingScreen(int var1, String var2) {
-      int var3 = (this.appletWidth - 281) / 2;
-      int var4 = (this.appletHeight - 148) / 2;
+      int var3 = (this.width - 281) / 2;
+      int var4 = (this.height - 148) / 2;
       this.graphics.setColor(Color.black);
-      this.graphics.fillRect(0, 0, this.appletWidth, this.appletHeight);
+      this.graphics.fillRect(0, 0, this.width, this.height);
       if(!this.vp) {
-         this.graphics.drawImage(this.bq, var3, var4, this);
+         this.graphics.drawImage(this.bq, var3, var4);
       }
 
       var3 += 2;
@@ -550,7 +496,7 @@ public class GameApplet extends Applet implements Runnable {
          this.drawString(this.graphics, "Copyright \u00a92000 Andrew Gower", this.zp, var3 + 138, var4 + 44);
       } else {
          this.graphics.setColor(new Color(132, 132, 152));
-         this.drawString(this.graphics, "Copyright \u00a92000 Andrew Gower", this.aq, var3 + 138, this.appletHeight - 20);
+         this.drawString(this.graphics, "Copyright \u00a92000 Andrew Gower", this.aq, var3 + 138, this.height - 20);
       }
 
       if(this.up != null) {
@@ -561,8 +507,8 @@ public class GameApplet extends Applet implements Runnable {
    }
 
    public void showLoadingProgress(int var1, String var2) {
-      int var3 = (this.appletWidth - 281) / 2;
-      int var4 = (this.appletHeight - 148) / 2;
+      int var3 = (this.width - 281) / 2;
+      int var4 = (this.height - 148) / 2;
       var3 += 2;
       var4 += 90;
       this.loadingProgressPercent = var1;
@@ -584,46 +530,42 @@ public class GameApplet extends Applet implements Runnable {
       this.drawString(this.graphics, var2, this.yp, var3 + 138, var4 + 10);
    }
 
-   public void drawString(Graphics g, String var2, Font var3, int var4, int var5) {
-      Object var6;
-      if(gameFrame == null) {
-         var6 = this;
-      } else {
-         var6 = gameFrame;
-      }
-
-      FontMetrics var7 = ((Component)var6).getFontMetrics(var3);
-      var7.stringWidth(var2);
-      g.setFont(var3);
-      g.drawString(var2, var4 - var7.stringWidth(var2) / 2, var5 + var7.getHeight() / 4);
+   public void drawString(Graphics g, String string, Font font, int x, int y) {
+	  int stringWidth = this.graphics.measureTextWidth(string);
+	  graphics.setFont(font);
+	  graphics.drawString(string, x - stringWidth / 2, y + font.getSize() / 4);
    }
 
-   public Image createImage(byte[] var1) {
-      int var2 = var1[13] * 256 + var1[12];
-      int var3 = var1[15] * 256 + var1[14];
-      byte[] var4 = new byte[256];
-      byte[] var5 = new byte[256];
-      byte[] var6 = new byte[256];
+   public ImageData createImage(byte[] buffer) {
+      int width = buffer[13] * 256 + buffer[12];
+      int height = buffer[15] * 256 + buffer[14];
+      byte[] redIndex = new byte[256];
+      byte[] greenIndex = new byte[256];
+      byte[] blueIndex = new byte[256];
 
-      for(int var7 = 0; var7 < 256; ++var7) {
-         var4[var7] = var1[20 + var7 * 3];
-         var5[var7] = var1[19 + var7 * 3];
-         var6[var7] = var1[18 + var7 * 3];
+      for(int rgbIdx = 0; rgbIdx < 256; ++rgbIdx) {
+         redIndex[rgbIdx] = buffer[20 + rgbIdx * 3];
+         greenIndex[rgbIdx] = buffer[19 + rgbIdx * 3];
+         blueIndex[rgbIdx] = buffer[18 + rgbIdx * 3];
       }
 
-      IndexColorModel var8 = new IndexColorModel(8, 256, var4, var5, var6);
-      byte[] var9 = new byte[var2 * var3];
-      int var10 = 0;
+      Uint8ClampedArray imageBytes = Uint8ClampedArray.create(width * height * 4);
+      int byteIdx = 0;
 
-      for(int var11 = var3 - 1; var11 >= 0; --var11) {
-         for(int var12 = 0; var12 < var2; ++var12) {
-            var9[var10++] = var1[786 + var12 + var11 * var2];
+      for(int y = height - 1; y >= 0; --y) {
+         for(int x = 0; x < width; ++x) {
+            int pixel = buffer[786 + x + y * width];
+            imageBytes.set(byteIdx++, redIndex[pixel] & 0xff);
+            imageBytes.set(byteIdx++, greenIndex[pixel] & 0xff);
+            imageBytes.set(byteIdx++, blueIndex[pixel] & 0xff);
+            imageBytes.set(byteIdx++, 255);
          }
       }
 
-      MemoryImageSource var14 = new MemoryImageSource(var2, var3, var8, var9, 0, var2);
-      Image var13 = this.createImage(var14);
-      return var13;
+      ImageData imageData = this.graphics.getContext().createImageData(width, height);
+      imageData.setData(imageBytes);
+
+      return imageData;
    }
 
    public byte[] readDataFile(String var1, String var2, int var3) throws IOException {
@@ -643,8 +585,7 @@ public class GameApplet extends Applet implements Runnable {
                var1 = var1.toUpperCase();
             }
 
-            InputStream var8 = Utility.openStream(var1);
-            DataInputStream var9 = new DataInputStream(var8);
+            FileDownloadStream var9 = Utility.getDownloadStream(var1);
             byte[] var10 = new byte[6];
             var9.readFully(var10, 0, 6);
             var5 = ((var10[0] & 255) << 16) + ((var10[1] & 255) << 8) + (var10[2] & 255);

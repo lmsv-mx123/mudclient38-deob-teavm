@@ -1,16 +1,10 @@
 package mudclient;
 
-import java.awt.Component;
-
 public class SurfaceSprite extends Surface {
    public mudclient client;
 
-   public SurfaceSprite(int var1, int var2, int var3, Component var4) {
+   public SurfaceSprite(int var1, int var2, int var3, mudclient var4) {
       super(var1, var2, var3, var4);
-      boolean flag = false;
-      if(flag) {
-         new Surface(var1, var2, var3, var4);
-      }
    }
 
    public void spriteClipping(int var1, int var2, int var3, int var4, int var5, int var6, int var7) {

@@ -1,26 +1,17 @@
 package mudclient;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.util.Hashtable;
+import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.typedarrays.Uint8ClampedArray;
 
-public class Surface implements ImageProducer, ImageObserver {
+public class Surface {
   public int width2;
   public int tj;
-  public int uj;
+  public int area;
   public int vj;
   public int wj;
-  ColorModel xj;
   public int[] pixels;
-  ImageConsumer zj;
-  private Component ak;
-  public Image bk;
+  private mudclient ak;
+  public ImageData imageData;
   private int[][] ck;
   private byte[][] dk;
   private int[][] ek;
@@ -68,41 +59,29 @@ public class Surface implements ImageProducer, ImageObserver {
   public static final int ul = 5;
   public static final int vl = 6;
   public static final int wl = 7;
+  
+  private Uint8ClampedArray rgbPixels;
 
-  public Surface(int var1, int var2, int var3, Component var4) {
+  public Surface(int width, int height, int spriteLimit, mudclient var4) {
     this.ak = var4;
-    this.ok = var2;
-    this.qk = var1;
-    this.vj = this.width2 = var1;
-    this.wj = this.tj = var2;
-    this.uj = var1 * var2;
-    this.pixels = new int[var1 * var2];
-    this.ck = new int[var3][];
-    this.lk = new boolean[var3];
-    this.dk = new byte[var3][];
-    this.ek = new int[var3][];
-    this.fk = new int[var3];
-    this.gk = new int[var3];
-    this.spriteWidthFull = new int[var3];
-    this.spriteHeightFull = new int[var3];
-    this.hk = new int[var3];
-    this.ik = new int[var3];
-    if (var1 > 1 && var2 > 1 && var4 != null) {
-      this.xj = new DirectColorModel(32, 16711680, 65280, 255);
-      int var5 = this.width2 * this.tj;
-
-      for (int var6 = 0; var6 < var5; ++var6) {
-        this.pixels[var6] = 0;
-      }
-
-      this.bk = var4.createImage(this);
-      this.of();
-      var4.prepareImage(this.bk, var4);
-      this.of();
-      var4.prepareImage(this.bk, var4);
-      this.of();
-      var4.prepareImage(this.bk, var4);
-    }
+    this.ok = height;
+    this.qk = width;
+    this.vj = this.width2 = width;
+    this.wj = this.tj = height;
+    this.area = width * height;
+    this.pixels = new int[width * height];
+    this.ck = new int[spriteLimit][];
+    this.lk = new boolean[spriteLimit];
+    this.dk = new byte[spriteLimit][];
+    this.ek = new int[spriteLimit][];
+    this.fk = new int[spriteLimit];
+    this.gk = new int[spriteLimit];
+    this.spriteWidthFull = new int[spriteLimit];
+    this.spriteHeightFull = new int[spriteLimit];
+    this.hk = new int[spriteLimit];
+    this.ik = new int[spriteLimit];
+    this.rgbPixels = Uint8ClampedArray.create(width * height * 4);
+    this.imageData = ak.getGraphics().getContext().createImageData(width, height);
 
   }
 
@@ -117,41 +96,7 @@ public class Surface implements ImageProducer, ImageObserver {
 
     this.width2 = var1;
     this.tj = var2;
-    this.uj = var1 * var2;
-  }
-
-  public synchronized void addConsumer(ImageConsumer var1) {
-    this.zj = var1;
-    var1.setDimensions(this.width2, this.tj);
-    var1.setProperties((Hashtable)null);
-    var1.setColorModel(this.xj);
-    var1.setHints(14);
-  }
-
-  public synchronized boolean isConsumer(ImageConsumer var1) {
-    return this.zj == var1;
-  }
-
-  public synchronized void removeConsumer(ImageConsumer var1) {
-    if (this.zj == var1) {
-      this.zj = null;
-    }
-
-  }
-
-  public void startProduction(ImageConsumer var1) {
-    this.addConsumer(var1);
-  }
-
-  public void requestTopDownLeftRightResend(ImageConsumer var1) {
-    System.out.println("TDLR");
-  }
-
-  public synchronized void of() {
-    if (this.zj != null) {
-      this.zj.setPixels(0, 0, this.width2, this.tj, this.xj, this.pixels, 0, this.width2);
-      this.zj.imageComplete(2);
-    }
+    this.area = var1 * var2;
   }
 
   public void setBounds(int var1, int var2, int var3, int var4) {
@@ -184,9 +129,18 @@ public class Surface implements ImageProducer, ImageObserver {
     this.ok = this.tj;
   }
 
-  public void draw(Graphics var1, int var2, int var3) {
-    this.of();
-    var1.drawImage(this.bk, var2, var3, this);
+  public void draw(Graphics graphics, int x, int y) {
+	  for (int i = 0; i < this.area * 4; i += 4) {                             
+	         int pixel = this.pixels[i / 4];
+
+	         this.rgbPixels.set(i, (pixel >> 16) & 255);                     
+	         this.rgbPixels.set(i + 1, (pixel >> 8) & 255);                  
+	         this.rgbPixels.set(i + 2, pixel & 255);                         
+	         this.rgbPixels.set(i + 3, 255);
+	      }
+	      
+	      this.imageData.setData(this.rgbPixels);
+	      graphics.drawImage(this.imageData, x, y);
   }
 
   public void blackScreen() {
@@ -2156,10 +2110,6 @@ public class Surface implements ImageProducer, ImageObserver {
     }
 
     return var3;
-  }
-
-  public boolean imageUpdate(Image var1, int var2, int var3, int var4, int var5, int var6) {
-    return true;
   }
 
   static {

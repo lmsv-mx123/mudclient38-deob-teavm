@@ -37,7 +37,8 @@ public class Buffer {
    }
 
    public Buffer(String var1) throws IOException {
-      this.input = Utility.openStream(var1);
+	   //TODO:
+      //this.input = Utility.openStream(var1);
    }
 
    public Buffer(byte[] var1) {

@@ -1,12 +1,8 @@
 package mudclient;
 
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.io.IOException;
 
-public class GameConnection extends GameApplet {
+public class GameConnection extends GameShell {
    public static String[] loginScreenStatuses = new String[50];
    public static boolean uc = true;
    public static int vc = 99999999;
@@ -42,11 +38,7 @@ public class GameConnection extends GameApplet {
          var2 = Utility.formatAuthString(var2, 20);
          if(var1.trim().length() != 0 && var2.trim().length() != 0) {
             this.showLoginScreenStatus(loginScreenStatuses[6], loginScreenStatuses[7]);
-            if(this.inAppletMode()) {
-               this.clientStream = ClientStream.create(this.serverAddress, this, this.port);
-            } else {
-               this.clientStream = ClientStream.create(this.serverAddress, (Applet)null, this.port);
-            }
+            this.clientStream = ClientStream.create(this.serverAddress, this.port);
 
             this.clientStream.newPacket(0);
             this.clientStream.writeLong(Utility.username2hash(var1));
@@ -82,11 +74,7 @@ public class GameConnection extends GameApplet {
 
    public void newPlayer(String var1, String var2, String var3, int var4, int var5, int var6) {
       try {
-         if(this.inAppletMode()) {
-            this.clientStream = ClientStream.create(this.serverAddress, this, this.port);
-         } else {
-            this.clientStream = ClientStream.create(this.serverAddress, (Applet)null, this.port);
-         }
+    	  this.clientStream = ClientStream.create(this.serverAddress, this.port);
 
          this.clientStream.newPacket(2);
          var1 = Utility.formatAuthString(var1, 20);
@@ -150,11 +138,7 @@ public class GameConnection extends GameApplet {
             this.s(loginScreenStatuses[2], loginScreenStatuses[3]);
 
             try {
-               if(this.inAppletMode()) {
-                  this.clientStream = ClientStream.create(this.serverAddress, this, this.port);
-               } else {
-                  this.clientStream = ClientStream.create(this.serverAddress, (Applet)null, this.port);
-               }
+               this.clientStream = ClientStream.create(this.serverAddress, this.port);
 
                this.clientStream.newPacket(19);
                this.clientStream.writeLong(Utility.username2hash(var1));
