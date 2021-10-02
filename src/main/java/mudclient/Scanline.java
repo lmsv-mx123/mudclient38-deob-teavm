@@ -1,4 +1,4 @@
-package jagex.client;
+package mudclient;
 
 public class Scanline {
    int nkb;

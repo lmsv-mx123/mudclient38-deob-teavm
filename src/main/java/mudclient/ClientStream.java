@@ -1,6 +1,5 @@
-package jagex.client;
+package mudclient;
 
-import jagex.Buffer;
 import java.applet.Applet;
 import java.io.IOException;
 import java.io.InputStream;

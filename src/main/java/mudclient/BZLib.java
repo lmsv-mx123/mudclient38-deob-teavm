@@ -1,4 +1,4 @@
-package jagex;
+package mudclient;
 
 public class BZLib {
    static final int js = 1;

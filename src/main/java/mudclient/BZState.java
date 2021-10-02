@@ -1,4 +1,4 @@
-package jagex;
+package mudclient;
 
 class BZState {
    final int j = 4096;

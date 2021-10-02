@@ -1,3 +1,5 @@
+package mudclient;
+
 public class Version {
   public static int CLIENT = 38;
   public static int CONFIG = 17;

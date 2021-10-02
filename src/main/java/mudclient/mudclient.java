@@ -1,9 +1,4 @@
-import jagex.Utility;
-import jagex.client.GameConnection;
-import jagex.client.Panel;
-import jagex.client.GameModel;
-import jagex.client.Surface;
-import jagex.client.Scene;
+package mudclient;
 
 import java.awt.Color;
 import java.awt.Font;

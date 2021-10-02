@@ -1,3 +1,5 @@
+package mudclient;
+
 public class Character {
    public long hash;
    public String name;

@@ -1,4 +1,4 @@
-package jagex;
+package mudclient;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

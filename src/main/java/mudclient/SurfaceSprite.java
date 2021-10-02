@@ -1,4 +1,5 @@
-import jagex.client.Surface;
+package mudclient;
+
 import java.awt.Component;
 
 public class SurfaceSprite extends Surface {

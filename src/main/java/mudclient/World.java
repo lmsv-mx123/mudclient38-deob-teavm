@@ -1,7 +1,5 @@
-import jagex.Utility;
-import jagex.client.GameModel;
-import jagex.client.Surface;
-import jagex.client.Scene;
+package mudclient;
+
 import java.io.IOException;
 
 public class World {

@@ -1,7 +1,4 @@
-package jagex.client;
-
-import jagex.BZLib;
-import jagex.Utility;
+package mudclient;
 
 import java.applet.Applet;
 import java.awt.Color;

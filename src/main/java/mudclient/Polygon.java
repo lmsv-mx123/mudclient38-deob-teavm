@@ -1,4 +1,4 @@
-package jagex.client;
+package mudclient;
 
 public class Polygon {
    protected int bfb;

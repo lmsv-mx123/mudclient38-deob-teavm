@@ -1,4 +1,4 @@
-package jagex.client;
+package mudclient;
 
 import java.awt.Event;
 import java.awt.Frame;

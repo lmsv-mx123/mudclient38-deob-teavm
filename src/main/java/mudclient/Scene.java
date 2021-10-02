@@ -1,6 +1,4 @@
-package jagex.client;
-
-import jagex.Utility;
+package mudclient;
 
 import java.io.IOException;
 
