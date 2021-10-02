@@ -3,6 +3,12 @@ package mudclient;
 import java.io.IOException;
 
 import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.dom.events.EventListener;
+import org.teavm.jso.dom.events.KeyboardEvent;
+import org.teavm.jso.dom.events.MouseEvent;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.TextRectangle;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
 
 public class GameShell {
@@ -14,7 +20,7 @@ public class GameShell {
    private boolean applicationMode;
    private int stopTimeout;
    private int interlaceTimer;
-   public int rp;
+   public int offsetY;
    public int lastMouseAction;
    public int loadingStep = 1;
    public String up;
@@ -26,14 +32,14 @@ public class GameShell {
    private Font aq = new Font("Helvetica", 0, 12);
    private ImageData bq;
    private Graphics graphics;
-   public boolean keyLcb = false;
-   public boolean keyRcb = false;
-   public boolean keyLeft = false;
+   public boolean keyLeftDown = false;
+   public boolean keyRightDown = false;
+   /*public boolean keyLeft = false;
    public boolean keyRight = false;
    public boolean keyUp = false;
    public boolean keyDown = false;
    public boolean keySpace = false;
-   public boolean keyNm = false;
+   public boolean keyNm = false;*/
    public int threadSleep = 1;
    public int mouseX;
    public int mouseY;
@@ -41,6 +47,8 @@ public class GameShell {
    public int lastMouseButtonDown;
    public int lastKeyCode1;
    public int lastKeyCode2;
+   private HTMLCanvasElement canvas;
+   private boolean ignoreInterlace = false;
    public boolean interlace = false;
    public String inputTextCurrent = "";
    public String inputTextFinal = "";
@@ -63,12 +71,78 @@ public class GameShell {
    public void drawHbar() {
    }
 
-   public final void startApplication(int width, int height, String var3, boolean var4) {
+   public final void startApplication(int width, int height, String title, boolean var4) {
       this.applicationMode = true;
       System.out.println("Started application");
       this.width = width;
       this.height = height;
       this.loadingStep = 1;
+      
+      HTMLDocument.current().setTitle(title);
+      
+      this.canvas = (HTMLCanvasElement) HTMLDocument.current().createElement("canvas");
+      this.canvas.setAttribute("tabindex", "-1");
+      this.canvas.setWidth(width);
+      this.canvas.setHeight(height);
+
+      this.canvas.addEventListener("mousedown", new EventListener<MouseEvent>(){
+         public void handleEvent(MouseEvent event) {                         
+             setMousePosition(event);                                        
+             mouseDown(event.getButton() == 2 ? 2 : 1);                   
+         }                                                                   
+     });                                                                     
+                                                                             
+     this.canvas.addEventListener("mouseup", new EventListener<MouseEvent>(){
+         public void handleEvent(MouseEvent event) {                         
+             setMousePosition(event);                                        
+             mouseUp();                                                
+         }                                                                   
+     });                                                                     
+                                                                             
+     this.canvas.addEventListener("mousemove", new EventListener<MouseEvent>(){
+         public void handleEvent(MouseEvent event) {                         
+             setMousePosition(event);                                        
+             mouseMove();                                                   
+         }                                                                   
+     });                                                                     
+                                                                             
+     this.canvas.addEventListener("contextmenu", new EventListener<MouseEvent>(){
+         public void handleEvent(MouseEvent event) {                         
+             event.preventDefault();                                         
+         }                                                                   
+     });
+
+      this.canvas.addEventListener("keydown", new EventListener<KeyboardEvent>(){
+         public void handleEvent(KeyboardEvent event) {                      
+            int code = event.getKeyCode();                                  
+                                                                           
+            char charCode =                                                 
+               event.getKey().length() == 1 ? event.getKey().charAt(0) : (char) code;
+
+            if (charCode == 112 && code == 80) {
+            	ignoreInterlace = true;
+            }
+
+            if (code == 8 || code == 13 || code == 10 || code == 9) {       
+               charCode = (char) code;                                     
+            }
+
+            keyDown(charCode);
+         }                                                                   
+      });                                                                     
+                                                                           
+      this.canvas.addEventListener("keyup", new EventListener<KeyboardEvent>(){
+         public void handleEvent(KeyboardEvent event) {                      
+            int code = event.getKeyCode();
+            keyUp(code);
+         }
+      });                                                                     
+  
+
+      this.graphics = new Graphics(this.canvas);
+
+      HTMLDocument.current().getBody().appendChild(this.canvas);
+      
       this.start();
    }
 
@@ -122,45 +196,23 @@ public class GameShell {
       this.lastKeyCode1 = key;
       this.lastKeyCode2 = key;
       this.lastMouseAction = 0;
-      if(key == 1006) {
-         this.keyLeft = true;
+
+      if(key == KeyEvent.VK_LEFT) {
+         this.keyLeftDown = true;
+      } else if(key == KeyEvent.VK_RIGHT) {
+         this.keyRightDown = true;
+      } else {
+    	// quick hack for now to prevent those keys from inputting into the chat box
+    	  this.handleKeyPress(key);
       }
 
-      if(key == 1007) {
-         this.keyRight = true;
-      }
-
-      if(key == 1004) {
-         this.keyUp = true;
-      }
-
-      if(key == 1005) {
-         this.keyDown = true;
-      }
-
-      if((char)key == 32) {
-         this.keySpace = true;
-      }
-
-      if((char)key == 110 || (char)key == 109) {
-         this.keyNm = true;
-      }
-
-      if((char)key == 78 || (char)key == 77) {
-         this.keyNm = true;
-      }
-
-      if((char)key == 123) {
-         this.keyLcb = true;
-      }
-
-      if((char)key == 125) {
-         this.keyRcb = true;
-      }
-
-      if((char)key == 1008) {
-         this.interlace = !this.interlace;
-      }
+      if (!ignoreInterlace) {
+          if (key == KeyEvent.VK_F1) {
+             this.interlace = !this.interlace;
+          }
+       } else {
+          this.ignoreInterlace = false;
+       }
 
       if((key >= 97 && key <= 122 || key >= 65 && key <= 90 || key >= 48 && key <= 57 || key == 32) && this.inputTextCurrent.length() < 16) {
          this.inputTextCurrent = this.inputTextCurrent + (char)key;
@@ -189,84 +241,49 @@ public class GameShell {
    public void handleKeyPress(int var1) {
    }
 
-   public boolean keyUp(int var2) {
+   public boolean keyUp(int key) {
 	  this.lastKeyCode1 = 0;
-      if(var2 == 1006) {
-         this.keyLeft = false;
+      if(key == KeyEvent.VK_LEFT) {
+    	  this.keyLeftDown = false;
       }
 
-      if(var2 == 1007) {
-         this.keyRight = false;
-      }
-
-      if(var2 == 1004) {
-         this.keyUp = false;
-      }
-
-      if(var2 == 1005) {
-         this.keyDown = false;
-      }
-
-      if((char)var2 == 32) {
-         this.keySpace = false;
-      }
-
-      if((char)var2 == 110 || (char)var2 == 109) {
-         this.keyNm = false;
-      }
-
-      if((char)var2 == 78 || (char)var2 == 77) {
-         this.keyNm = false;
-      }
-
-      if((char)var2 == 123) {
-         this.keyLcb = false;
-      }
-
-      if((char)var2 == 125) {
-         this.keyRcb = false;
+      if(key == KeyEvent.VK_RIGHT) {
+    	  this.keyRightDown = false;
       }
 
       return true;
    }
+   
+   private void setMousePosition(MouseEvent event) {                                      
+	      TextRectangle boundingRect = canvas.getBoundingClientRect();            
+	      double scaleX = canvas.getWidth() / boundingRect.getWidth();            
+	      double scaleY = canvas.getHeight() / boundingRect.getHeight();          
+	                                                                              
+	      this.mouseX = (int) ((event.getClientX() - boundingRect.getLeft()) * scaleX);
+	      this.mouseY = (int) ((event.getClientY() - boundingRect.getTop()) * scaleY);
+	      this.mouseY += this.offsetY;
+	 }
 
-   public boolean mouseMove(int var2, int var3) {
-      this.mouseX = var2;
-      this.mouseY = var3 + this.rp;
-      this.mouseButtonDown = 0;
+   public boolean mouseMove() {
+	 //this.mouseButtonDown = 0; javascript doesn't have a separate drag event
       this.lastMouseAction = 0;
       return true;
    }
 
-   public boolean mouseUp(int var2, int var3) {
-      this.mouseX = var2;
-      this.mouseY = var3 + this.rp;
+   public boolean mouseUp() {
       this.mouseButtonDown = 0;
       return true;
    }
 
-   public boolean mouseDown(int var2, int var3) {
-      this.mouseX = var2;
-      this.mouseY = var3 + this.rp;
-      /*if(var1.metaDown()) {
-         this.mouseButtonDown = 2;
-      } else {
-         this.mouseButtonDown = 1;
-      }*/
-
+   public boolean mouseDown(int button) {
+      this.mouseButtonDown = button;
       this.lastMouseButtonDown = this.mouseButtonDown;
       this.lastMouseAction = 0;
       return true;
    }
 
    public boolean mouseDrag(int var2, int var3) {
-      this.mouseX = var2;
-      this.mouseY = var3 + this.rp;
-      /*if(var1.metaDown()) {
-         this.mouseButtonDown = 2;
-      } else {
-         this.mouseButtonDown = 1;
-      }*/
+      this.mouseButtonDown = 1;
 
       return true;
    }

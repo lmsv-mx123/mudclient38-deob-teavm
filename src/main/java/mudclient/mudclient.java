@@ -286,7 +286,7 @@ public class mudclient extends GameConnection {
   public void startGame() {
 
     //super.ad = 43594;
-    super.rp = -11;
+    super.offsetY = -11;
     GameConnection.vc = 500;
     GameConnection.uc = false;
     GameConnection.xc = 6;
@@ -1653,9 +1653,9 @@ public class mudclient extends GameConnection {
         super.lastMouseButtonDown = 0;
         if (this.optionCameraModeAuto) {
           if (this.qu == 0 || this.cameraAutoAngleDebug) {
-            if (super.keyLeft) {
+            if (super.keyLeftDown) {
               this.cameraAngle = this.cameraAngle + 1 & 7;
-              super.keyLeft = false;
+              super.keyLeftDown = false;
               if (!this.fogOfWar) {
                 if ((this.cameraAngle & 1) == 0) {
                   this.cameraAngle = this.cameraAngle + 1 & 7;
@@ -1667,9 +1667,9 @@ public class mudclient extends GameConnection {
               }
             }
 
-            if (super.keyRight) {
+            if (super.keyRightDown) {
               this.cameraAngle = this.cameraAngle + 7 & 7;
-              super.keyRight = false;
+              super.keyRightDown = false;
               if (!this.fogOfWar) {
                 if ((this.cameraAngle & 1) == 0) {
                   this.cameraAngle = this.cameraAngle + 7 & 7;
@@ -1681,9 +1681,9 @@ public class mudclient extends GameConnection {
               }
             }
           }
-        } else if (super.keyLeft) {
+        } else if (super.keyLeftDown) {
           this.cameraRotation = this.cameraRotation + 2 & 255;
-        } else if (super.keyRight) {
+        } else if (super.keyRightDown) {
           this.cameraRotation = this.cameraRotation - 2 & 255;
         }
 
