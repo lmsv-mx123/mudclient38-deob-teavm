@@ -2,6 +2,7 @@ package mudclient;
 
 import java.io.IOException;
 
+import org.teavm.jso.browser.Location;
 import org.teavm.jso.canvas.ImageData;
 
 public class mudclient extends GameConnection {
@@ -30,7 +31,7 @@ public class mudclient extends GameConnection {
   int[] npcWalkModel = new int[] {0, 1, 2, 1};
   int[] npcCombatModelArray1 = new int[] {0, 1, 2, 1, 0, 0, 0, 0};
   int[] npcCombatModelArray2 = new int[] {0, 0, 0, 0, 0, 1, 2, 1};
-  public boolean yt = true;
+  public boolean appletMode = true;
   public int cameraRotation = 128;
   public int au;
   int gameWidth = 512;
@@ -277,10 +278,32 @@ public class mudclient extends GameConnection {
   int[] healthBarMissing;
 
   public static void main(String[] var0) {
-    mudclient var1 = new mudclient();
-    var1.yt = false;
-    var1.startApplication(var1.gameWidth, var1.gameHeight + 22, "Runescape by Andrew Gower", false);
-    var1.threadSleep = 10;
+    mudclient mud = new mudclient();
+    mud.appletMode = false;
+
+    String[] webArgs = new String[0];
+    
+    String hash = Location.current().getHash();
+
+    if (hash != null && hash.length() > 0) {
+       webArgs = hash.substring(1).split(",");
+    }
+
+    boolean members = false;
+    if(webArgs.length > 0 && webArgs[0].equals("members")) {
+       members = true;
+    }
+
+    if(webArgs.length > 1) {
+       mud.serverAddress = webArgs[1];
+    }
+
+    if(webArgs.length > 2) {
+       mud.port = Integer.parseInt(webArgs[2]);
+    }
+    
+    mud.startApplication(mud.gameWidth, mud.gameHeight + 22, "Runescape by Andrew Gower", false);
+    mud.threadSleep = 10;
   }
 
   public void startGame() {
