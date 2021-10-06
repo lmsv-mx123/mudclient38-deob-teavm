@@ -1,12 +1,8 @@
 package mudclient;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class Buffer {
-   protected InputStream input;
-   protected OutputStream output;
    protected Socket socket;
    protected boolean closing = false;
    protected byte[] inputBuffer;
@@ -25,15 +21,8 @@ public class Buffer {
    final int ke = 34;
    static char[] le = new char[256];
 
-   public Buffer(InputStream var1) {
-      this.input = var1;
-   }
-
    public Buffer(Socket socket) throws IOException {
       this.socket = socket;
-      //TODO:
-      //this.input = socket.getInputStream();
-      //this.output = socket.getOutputStream();
    }
 
    public Buffer(String var1) throws IOException {
@@ -54,37 +43,11 @@ public class Buffer {
    }
 
    public void close() {
-      if(!this.closing) {
-         if(this.output != null) {
-            try {
-               this.output.flush();
-            } catch (IOException var2) {
-               ;
-            }
-         }
-
-         try {
-            if(this.socket != null) {
-               this.socket.close();
-            }
-
-            if(this.input != null) {
-               this.input.close();
-            }
-
-            if(this.output != null) {
-               this.output.close();
-               return;
-            }
-         } catch (IOException var1) {
-            System.out.println("Error closing stream");
-         }
-
-      }
+      this.closing = true;
    }
 
    public int read() throws IOException {
-      return this.inputBuffer != null?this.inputBuffer[this.yd++]:(this.closing ?0:this.input.read());
+      return this.inputBuffer != null?this.inputBuffer[this.yd++]:(this.closing ?0:this.socket.read());
    }
 
    public int readByte() throws IOException {
@@ -98,7 +61,7 @@ public class Buffer {
    }
 
    public int available() throws IOException {
-      return this.closing ?0:this.input.available();
+      return this.closing ?0:this.socket.available();
    }
 
    public void readBytes(int var1, byte[] var2) throws IOException {
@@ -107,7 +70,7 @@ public class Buffer {
 
          int var5;
          for(boolean var4 = false; var3 < var1; var3 += var5) {
-            if((var5 = this.input.read(var2, var3, var1 - var3)) <= 0) {
+            if((var5 = this.socket.readBytes(var2, var3, var1 - var3)) <= 0) {
                throw new IOException("EOF");
             }
          }

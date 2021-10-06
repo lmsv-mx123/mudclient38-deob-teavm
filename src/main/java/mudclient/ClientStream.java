@@ -1,8 +1,6 @@
 package mudclient;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
 
 public class ClientStream extends Buffer {
    private boolean socketException = false;
@@ -10,14 +8,8 @@ public class ClientStream extends Buffer {
    private byte[] buffer;
    private int endOffset;
    private int writeOffset;
-   //private Thread thread;
-   //private boolean closed = true;
    public int offset = 3;
    public byte[] buf;
-
-   public ClientStream(InputStream var1) {
-      super(var1);
-   }
 
    public ClientStream(Socket socket) throws IOException {
 	  super(socket);
@@ -32,109 +24,31 @@ public class ClientStream extends Buffer {
       super(var1);
    }
 
-   public static ClientStream create(String var0, int var2) throws IOException {
-      Socket var3;
-      /*if(var1 != null) {
-         var3 = new Socket(InetAddress.getByName(var1.getCodeBase().getHost()), var2);
-      } else {
-         var3 = new Socket(InetAddress.getByName(var0), var2);
-      }*/
-      var3 = new Socket(var0, var2);
+   public static ClientStream create(String address, int port) throws IOException {
+      Socket socket = new Socket(address, port);
+      socket.connect();
 
-      //var3.setSoTimeout(30000);
-      return new ClientStream(var3);
+      //socket.setSoTimeout(30000);
+      return new ClientStream(socket);
    }
 
-   public void close() {
-      if(!super.closing) {
-         try {
-            if(super.socket != null) {
-               super.socket.close();
-            }
-
-            //if(this.thread != null) {
-               //this.closed = true;
-               synchronized(this){
-            	   this.notify();
-               }
-
-               //this.thread = null;
-            //}
-
-            if(super.input != null) {
-               super.input.close();
-            }
-
-            if(super.output != null) {
-               super.output.close();
-            }
-
-            this.buffer = null;
-            this.buf = null;
-         } catch (IOException var5) {
-            System.out.println("Error closing stream");
-         }
-      }
-   }
+   //public void close() { }
 
    public void writeBytes(byte[] var1, int var2, int var3) throws IOException {
       if(!super.closing) {
-         super.output.write(var1, var2, var3);
+         super.socket.write(var1, var2, var3);
       }
    }
 
    public void writeBytes(byte[] var1, int var2, int var3, boolean var4) throws IOException {
-      if(!super.closing) {
-         if(this.buffer == null) {
-            this.buffer = new byte[5000];
-         }
-
-         synchronized(this) {
-        	 for(int var7 = 0; var7 < var3; ++var7) {
-                 this.buffer[this.writeOffset] = var1[var7 + var2];
-                 this.writeOffset = (this.writeOffset + 1) % 5000;
-                 if(this.writeOffset == (this.endOffset + 4900) % 5000) {
-                    this.socketException = true;
-                    this.socketExceptionMessage = "Write buffer full! " + var3;
-                    var7 = var3 + 1;
-                    //this.closed = true;
-                    super.input.close();
-                    super.output.close();
-                    super.closing = true;
-                    break;
-                 }
-              }
-
-              if(var4) {
-                 /*if(this.thread == null) {
-                    this.closed = false;
-                    this.thread = new Thread(this);
-                    this.thread.setDaemon(true);
-                    this.thread.setPriority(4);
-                    this.thread.start();
-                 }*/
-
-                 this.notify();
-              }
-         }
-
-         if(this.socketException) {
-            throw new IOException(this.socketExceptionMessage);
-         }
-      }
+	   if(!super.closing) {
+	      super.socket.write(var1, var2, var3);
+	   }
    }
 
    public void flush() {
       synchronized(this){
     	  if(this.writeOffset != this.endOffset && this.buffer != null) {
-              /*if(this.thread == null) {
-                 this.closed = false;
-                 this.thread = new Thread(this);
-                 this.thread.setDaemon(true);
-                 this.thread.setPriority(4);
-                 this.thread.start();
-              }*/
-
               this.notify();
               return;
            }

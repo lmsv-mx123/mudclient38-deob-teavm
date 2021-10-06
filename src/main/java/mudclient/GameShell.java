@@ -193,7 +193,6 @@ public class GameShell {
    }
 
    public boolean keyDown(int key) {
-	  this.handleKeyPress(key);
       this.lastKeyCode1 = key;
       this.lastKeyCode2 = key;
       this.lastMouseAction = 0;
