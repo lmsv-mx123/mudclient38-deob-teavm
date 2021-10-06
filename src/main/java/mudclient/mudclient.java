@@ -277,7 +277,7 @@ public class mudclient extends GameConnection {
   int[] healthBarY;
   int[] healthBarMissing;
 
-  public static void main(String[] var0) {
+  public static void main(String[] args) {
     mudclient mud = new mudclient();
     mud.appletMode = false;
 
@@ -290,9 +290,9 @@ public class mudclient extends GameConnection {
     }
 
     boolean members = false;
-    if(webArgs.length > 0 && webArgs[0].equals("members")) {
+    /*if(webArgs.length > 0 && webArgs[0].equals("members")) {
        members = true;
-    }
+    }*/
 
     if(webArgs.length > 1) {
        mud.serverAddress = webArgs[1];

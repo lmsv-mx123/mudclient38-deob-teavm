@@ -3,16 +3,15 @@ package mudclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.Socket;
 
-public class ClientStream extends Buffer implements Runnable {
+public class ClientStream extends Buffer {
    private boolean socketException = false;
    private String socketExceptionMessage = "error in twriter";
    private byte[] buffer;
    private int endOffset;
    private int writeOffset;
-   private Thread thread;
-   private boolean closed = true;
+   //private Thread thread;
+   //private boolean closed = true;
    public int offset = 3;
    public byte[] buf;
 
@@ -20,8 +19,9 @@ public class ClientStream extends Buffer implements Runnable {
       super(var1);
    }
 
-   public ClientStream(Socket var1) throws IOException {
-      super(var1);
+   public ClientStream(Socket socket) throws IOException {
+	  super(socket);
+      this.socket = socket;
    }
 
    public ClientStream(String var1) throws IOException {
@@ -39,9 +39,9 @@ public class ClientStream extends Buffer implements Runnable {
       } else {
          var3 = new Socket(InetAddress.getByName(var0), var2);
       }*/
-      var3 = new Socket(InetAddress.getByName(var0), var2);
+      var3 = new Socket(var0, var2);
 
-      var3.setSoTimeout(30000);
+      //var3.setSoTimeout(30000);
       return new ClientStream(var3);
    }
 
@@ -52,14 +52,14 @@ public class ClientStream extends Buffer implements Runnable {
                super.socket.close();
             }
 
-            if(this.thread != null) {
-               this.closed = true;
+            //if(this.thread != null) {
+               //this.closed = true;
                synchronized(this){
             	   this.notify();
                }
 
-               this.thread = null;
-            }
+               //this.thread = null;
+            //}
 
             if(super.input != null) {
                super.input.close();
@@ -97,7 +97,7 @@ public class ClientStream extends Buffer implements Runnable {
                     this.socketException = true;
                     this.socketExceptionMessage = "Write buffer full! " + var3;
                     var7 = var3 + 1;
-                    this.closed = true;
+                    //this.closed = true;
                     super.input.close();
                     super.output.close();
                     super.closing = true;
@@ -106,13 +106,13 @@ public class ClientStream extends Buffer implements Runnable {
               }
 
               if(var4) {
-                 if(this.thread == null) {
+                 /*if(this.thread == null) {
                     this.closed = false;
                     this.thread = new Thread(this);
                     this.thread.setDaemon(true);
                     this.thread.setPriority(4);
                     this.thread.start();
-                 }
+                 }*/
 
                  this.notify();
               }
@@ -127,65 +127,17 @@ public class ClientStream extends Buffer implements Runnable {
    public void flush() {
       synchronized(this){
     	  if(this.writeOffset != this.endOffset && this.buffer != null) {
-              if(this.thread == null) {
+              /*if(this.thread == null) {
                  this.closed = false;
                  this.thread = new Thread(this);
                  this.thread.setDaemon(true);
                  this.thread.setPriority(4);
                  this.thread.start();
-              }
+              }*/
 
               this.notify();
               return;
            }
-      }
-
-   }
-
-   public void run() {
-      while(this.thread != null && !this.closed) {
-    	  int var1;
-          int var2;
-    	  synchronized(this){
-    		  if(this.writeOffset == this.endOffset) {
-                  try {
-                     this.wait();
-                  } catch (InterruptedException var11) {
-                     ;
-                  }
-               }
-
-               if(this.thread == null || this.closed) {
-                  return;
-               }
-
-               var2 = this.endOffset;
-               if(this.writeOffset >= this.endOffset) {
-                  var1 = this.writeOffset - this.endOffset;
-               } else {
-                  var1 = 5000 - this.endOffset;
-               }
-    	  }
-
-         if(var1 > 0) {
-            try {
-               super.output.write(this.buffer, var2, var1);
-            } catch (IOException var10) {
-               this.socketException = true;
-               this.socketExceptionMessage = "Twriter IOEx:" + var10;
-            }
-
-            this.endOffset = (this.endOffset + var1) % 5000;
-
-            try {
-               if(this.writeOffset == this.endOffset) {
-                  super.output.flush();
-               }
-            } catch (IOException var9) {
-               this.socketException = true;
-               this.socketExceptionMessage = "Twriter IOEx:" + var9;
-            }
-         }
       }
 
    }
@@ -221,7 +173,8 @@ public class ClientStream extends Buffer implements Runnable {
    }
 
    public void writeString(String var1) {
-      var1.getBytes(0, var1.length(), this.buf, this.offset);
+      //var1.getBytes(0, var1.length(), this.buf, this.offset);
+      System.arraycopy(var1.getBytes(), 0, this.buf, this.offset, var1.length());
       this.offset += var1.length();
    }
 

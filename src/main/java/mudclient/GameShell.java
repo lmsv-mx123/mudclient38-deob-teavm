@@ -144,6 +144,7 @@ public class GameShell {
       HTMLDocument.current().getBody().appendChild(this.canvas);
       
       this.start();
+      this.run();
    }
 
    public final boolean isApplication() {
@@ -330,7 +331,7 @@ public class GameShell {
       }
 
       if(!this.applicationMode) {
-         System.exit(0);
+         //System.exit(0);
       }
 
    }

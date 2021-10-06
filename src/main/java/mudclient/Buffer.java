@@ -3,7 +3,6 @@ package mudclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 
 public class Buffer {
    protected InputStream input;
@@ -30,10 +29,11 @@ public class Buffer {
       this.input = var1;
    }
 
-   public Buffer(Socket var1) throws IOException {
-      this.socket = var1;
-      this.input = var1.getInputStream();
-      this.output = var1.getOutputStream();
+   public Buffer(Socket socket) throws IOException {
+      this.socket = socket;
+      //TODO:
+      //this.input = socket.getInputStream();
+      //this.output = socket.getOutputStream();
    }
 
    public Buffer(String var1) throws IOException {
