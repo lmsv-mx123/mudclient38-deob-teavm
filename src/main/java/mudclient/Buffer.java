@@ -64,17 +64,9 @@ public class Buffer {
       return this.closing ?0:this.socket.available();
    }
 
-   public void readBytes(int var1, byte[] var2) throws IOException {
+   public void readBytes(int length, byte[] buffer) throws IOException {
       if(!this.closing) {
-         int var3 = 0;
-
-         int var5;
-         for(boolean var4 = false; var3 < var1; var3 += var5) {
-            if((var5 = this.socket.readBytes(var2, var3, var1 - var3)) <= 0) {
-               throw new IOException("EOF");
-            }
-         }
-
+    	  this.socket.readBytes(buffer, 0, length);
       }
    }
 
