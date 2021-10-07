@@ -27,19 +27,13 @@ public class GameShell {
    private boolean vp = false;
    private int loadingProgressPercent;
    private String loadingProgressText = "Loading";
-   private Font yp = new Font("TimesRoman", 0, 15);
+   private Font yp = new Font("Times New Roman", 0, 15);
    private Font zp = new Font("Helvetica", 1, 13);
    private Font aq = new Font("Helvetica", 0, 12);
    private ImageData bq;
    private Graphics graphics;
    public boolean keyLeftDown = false;
    public boolean keyRightDown = false;
-   /*public boolean keyLeft = false;
-   public boolean keyRight = false;
-   public boolean keyUp = false;
-   public boolean keyDown = false;
-   public boolean keySpace = false;
-   public boolean keyNm = false;*/
    public int threadSleep = 1;
    public int mouseX;
    public int mouseY;
@@ -510,10 +504,10 @@ public class GameShell {
       this.drawString(this.graphics, var2, this.yp, var3 + 138, var4 + 10);
       if(!this.vp) {
          this.drawString(this.graphics, "Created by JAGeX - visit www.jagex.com", this.zp, var3 + 138, var4 + 30);
-         this.drawString(this.graphics, "Copyright \u00a92000 Andrew Gower", this.zp, var3 + 138, var4 + 44);
+         this.drawString(this.graphics, "Copyright ©2000 Andrew Gower", this.zp, var3 + 138, var4 + 44);
       } else {
          this.graphics.setColor(new Color(132, 132, 152));
-         this.drawString(this.graphics, "Copyright \u00a92000 Andrew Gower", this.aq, var3 + 138, this.height - 20);
+         this.drawString(this.graphics, "Copyright ©2000 Andrew Gower", this.aq, var3 + 138, this.height - 20);
       }
 
       if(this.up != null) {
